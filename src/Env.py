@@ -12,6 +12,10 @@ class Environment:
     def __init__(self):
         self.__env = gym.make("Breakout-v4", render_mode="human")
 
+    @property
+    def num_actions(self):
+        return 4
+
     def __preprocess(self, observation):
         img = np.dot(observation[...,:3], [0.2989, 0.5870, 0.1140])
 
@@ -23,13 +27,13 @@ class Environment:
 
         left = (width - new_width) / 2
         top = (height - new_height) / 2
-        2
+    
         right = (width + new_width) / 2
         bottom = (height + new_height) / 2
 
         img = img.crop((left, top, right, bottom))
 
-        return np.array(img)
+        return np.mean(np.array(img), axis=-1)
 
     def step(self, action):
         observations, rewards, ended = [], 0, False
@@ -55,6 +59,7 @@ class Environment:
 
     def reset(self):
         self.__env.reset()
+        return np.zeros((4, Environment.IMG_SIZE, Environment.IMG_SIZE))
 
         
         

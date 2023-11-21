@@ -8,9 +8,6 @@ class Memory:
         self.__buffer = deque(maxlen=maxlen)
 
     def push(self, current_state, reward, action, next_state):
-        current_state = current_state.transpose((2, 0, 1))
-        next_state = current_state.transpose((2, 0, 1))
-        
         memory_element = MemoryElement(current_state, reward, action, next_state)
         self.__buffer.append(memory_element)
 

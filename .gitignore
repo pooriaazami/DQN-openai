@@ -5,3 +5,4 @@ pyvenv.cfg
 share/
 
 src/__pycache__/*.pyc
+*.model
