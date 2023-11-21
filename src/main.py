@@ -20,7 +20,7 @@ GAMMA = .99
 TAU = 0.005
 LR = 1e-4
 
-NUM_EPISODES = 100
+NUM_EPISODES = 1_000_000
 PLOT = False
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -121,7 +121,7 @@ def train_model(num_episodes):
 
         if (i + 1) % 50 == 0:
             print(f'{i + 1} steps are done') 
-            torch.save(policy_net.state_dict(), f'{i}.model')               
+            torch.save(policy_net.state_dict(), f'{i + 1}.model')               
                 
         if PLOT:
             plt.show()
