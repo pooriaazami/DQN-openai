@@ -50,6 +50,7 @@ class Environment:
             observations.append(observation)
 
             rewards += reward
+            rewards = 1 if rewards > 0 else 0 if rewards == 0 else -1
 
             if ended or terminated or truncated:
                 ended = True
@@ -58,8 +59,11 @@ class Environment:
     
 
     def reset(self):
-        self.__env.reset()
-        return np.zeros((4, Environment.IMG_SIZE, Environment.IMG_SIZE))
+        observation, _ = self.__env.reset()
+        observation = self.__preprocess(observation)
+        observations = np.array([observation.copy() for _ in range(4)])
+
+        return observations
 
         
         

@@ -31,8 +31,8 @@ policy_net = PolicyNetwork(NUM_ACTIONS).to(DEVICE)
 target_net = PolicyNetwork(NUM_ACTIONS).to(DEVICE)
 target_net.load_state_dict(policy_net.state_dict())
 
-criterion = nn.SmoothL1Loss()
-optimizer = optim.RMSprop(policy_net.parameters(), lr=LR)
+criterion = nn.MSELoss()
+optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
 
 steps_done = 0
 
@@ -47,7 +47,7 @@ def select_action(state):
             state = torch.tensor(np.array([state]), device=DEVICE, dtype=torch.float32)
             action = policy_net(state).max(1).indices.view(1, 1).cpu().squeeze().numpy()
 
-    EPSILON = max(.1, 1 - steps_done / 10**6)
+    EPSILON = max(.1, 1 - steps_done / 10**6 * .9)
 
     steps_done += 1
     return action
@@ -91,7 +91,8 @@ def train_model(num_episodes):
 
     reward_log = []
     if PLOT:
-        _, axs = plt.subplots(1, 4)
+        _, game_state_axs = plt.subplots(1, 4)
+        _, report_axs = plt.subplots(1, 1)
 
     for i in range(num_episodes):
         sum_rewards = 0
@@ -103,7 +104,7 @@ def train_model(num_episodes):
 
             if PLOT:
                 for i in range(4):
-                    axs[i].imshow(new_state, cmap='gray')
+                    game_state_axs[i].imshow(new_state[i, :, :], cmap='gray')
             
                 plt.pause(.01)
 
@@ -115,9 +116,11 @@ def train_model(num_episodes):
                 sync_models_weights()
 
             if ended:
+                reward_log.append(sum_rewards)
+                print(sum_rewards)
+                if PLOT:
+                    report_axs.plot(np.array([reward_log]))
                 break
-
-        reward_log.append(sum_rewards)
 
         if (i + 1) % 50 == 0:
             print(f'{i + 1} steps are done') 
